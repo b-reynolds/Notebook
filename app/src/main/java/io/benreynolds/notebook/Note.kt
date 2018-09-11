@@ -1,5 +1,8 @@
 package io.benreynolds.notebook
 
+import android.arch.persistence.room.ColumnInfo
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 import java.util.Date
 
 /**
@@ -8,7 +11,13 @@ import java.util.Date
  * @param title The title of the [Note].
  * @param body The body of the [Note].
  */
-class Note(title: String, body: String = "") {
+@Entity
+class Note(
+    @PrimaryKey(autoGenerate = true) var uid: Long? = null,
+    title: String,
+    body: String = ""
+) {
+    @ColumnInfo(name = "title")
     var title: String = title
         set(value) {
             if (field != value) {
@@ -17,6 +26,7 @@ class Note(title: String, body: String = "") {
             }
         }
 
+    @ColumnInfo(name = "body")
     var body: String = body
         set(value) {
             if (field != value) {
@@ -25,5 +35,6 @@ class Note(title: String, body: String = "") {
             }
         }
 
+    @ColumnInfo(name = "last_modified")
     var lastModified = Date()
 }
