@@ -1,11 +1,13 @@
 package io.benreynolds.notebook
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
-import android.arch.persistence.room.Room
-import android.support.v7.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.room.Room
+import android.graphics.drawable.ClipDrawable
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class NotesActivity : AppCompatActivity() {
@@ -18,8 +20,15 @@ class NotesActivity : AppCompatActivity() {
 
         initializeDatabase()
         initializeViewModel()
+        initializeRecyclerView()
+    }
 
+    private fun initializeRecyclerView() {
         rvNotes.layoutManager = LinearLayoutManager(this)
+        rvNotes.addItemDecoration(
+                DividerItemDecoration(applicationContext, ClipDrawable.HORIZONTAL)
+        )
+
         viewModel.notes.observe(this, Observer { notes ->
             notes?.let {
                 rvNotes.adapter = NoteAdapter(it, this)
