@@ -9,8 +9,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.item_note.view.*
 
 class NoteAdapter(
-    val items: MutableList<Note>,
-    val context: Context
+        val items: List<Note>,
+        val context: Context
 ) : RecyclerView.Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(

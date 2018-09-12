@@ -1,9 +1,12 @@
 package io.benreynolds.notebook
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.arch.persistence.room.Room
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.activity_main.*
 
 class NotesActivity : AppCompatActivity() {
     private lateinit var notesDatabase: NoteDatabase
@@ -15,6 +18,13 @@ class NotesActivity : AppCompatActivity() {
 
         initializeDatabase()
         initializeViewModel()
+
+        rvNotes.layoutManager = LinearLayoutManager(this)
+        viewModel.notes.observe(this, Observer { notes ->
+            notes?.let {
+                rvNotes.adapter = NoteAdapter(it, this)
+            }
+        })
     }
 
     private fun initializeDatabase() {
