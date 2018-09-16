@@ -9,12 +9,7 @@ import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import android.view.animation.AlphaAnimation
 import androidx.recyclerview.widget.RecyclerView
-
-
-
-
 
 class NotesActivity : AppCompatActivity() {
     private lateinit var notesDatabase: NoteDatabase
