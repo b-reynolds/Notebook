@@ -1,9 +1,9 @@
 package io.benreynolds.notebook
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
 
 /**
  * Interface containing methods for interacting with a database containing [Note]s.
