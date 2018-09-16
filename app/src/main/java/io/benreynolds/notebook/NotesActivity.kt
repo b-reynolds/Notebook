@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.animation.AlphaAnimation
+import androidx.recyclerview.widget.RecyclerView
+
+
 
 
 
@@ -24,14 +27,6 @@ class NotesActivity : AppCompatActivity() {
         initializeDatabase()
         initializeViewModel()
         initializeRecyclerView()
-
-        fbAdd.setOnClickListener {
-            val animation1 = AlphaAnimation(1f, 0f)
-            animation1.duration = 1000
-            animation1.startOffset = 1000
-            animation1.fillAfter = true
-            fbAdd.startAnimation(animation1)
-        }
     }
 
     private fun initializeRecyclerView() {
@@ -39,8 +34,20 @@ class NotesActivity : AppCompatActivity() {
         rvNotes.addItemDecoration(
                 DividerItemDecoration(applicationContext, ClipDrawable.HORIZONTAL)
         )
-        rvNotes.adapter = NoteAdapter(mutableListOf(), this)
 
+        rvNotes.clearOnScrollListeners()
+        rvNotes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, scrollState: Int) {
+                when (scrollState) {
+                    RecyclerView.SCROLL_STATE_IDLE -> fbAdd.show()
+                    else -> fbAdd.hide()
+                }
+
+                super.onScrollStateChanged(recyclerView, scrollState)
+            }
+        })
+
+        rvNotes.adapter = NoteAdapter(mutableListOf(), this)
         viewModel.notes.observe(this, Observer { it ->
             it?.let {
                 (rvNotes.adapter as NoteAdapter).addItems(it)
