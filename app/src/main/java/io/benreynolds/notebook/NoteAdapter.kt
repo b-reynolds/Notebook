@@ -9,7 +9,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.item_note.view.*
 
 class NoteAdapter(
-        val items: List<Note>,
+        val items: MutableList<Note>,
         val context: Context
 ) : RecyclerView.Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -17,6 +17,15 @@ class NoteAdapter(
                 LayoutInflater.from(context)
                         .inflate(R.layout.item_note, parent, false)
         )
+    }
+
+    fun addItems(items: List<Note>) {
+        this.items.addAll(
+                items.filter { note ->
+                    this.items.find { it.uid != note.uid } == null
+                }
+        )
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
