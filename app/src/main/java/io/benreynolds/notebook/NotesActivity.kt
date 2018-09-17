@@ -14,6 +14,8 @@ import kotlinx.android.synthetic.main.activity_notes.fbAdd
 import kotlinx.android.synthetic.main.activity_notes.rvNotes
 import timber.log.Timber
 
+public const val EXTRA_NOTE_UID = "NOTE_UID"
+
 class NotesActivity : AppCompatActivity() {
     private lateinit var notesDatabase: NoteDatabase
     private lateinit var viewModel: NotesViewModel
@@ -81,7 +83,12 @@ class NotesActivity : AppCompatActivity() {
 
         rvNotes.adapter = NoteAdapter(mutableListOf(), this) {
             Timber.d("Starting NoteEditorActivity...")
-            startActivity(Intent(this, NoteEditorActivity::class.java))
+
+            startActivity(
+                Intent(this, NoteEditorActivity::class.java).apply {
+                    putExtra(EXTRA_NOTE_UID, it.uid)
+                }
+            )
         }
 
         viewModel.notes.observe(this, Observer {

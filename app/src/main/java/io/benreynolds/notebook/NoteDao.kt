@@ -16,6 +16,9 @@ interface NoteDao {
     @Query("SELECT * FROM note")
     fun getAll(): List<Note>
 
+    @Query("SELECT * FROM note WHERE uid= :uid ")
+    fun getNote(uid: Long): Note
+
     /**
      * Inserts [Note]s into the database.
      */

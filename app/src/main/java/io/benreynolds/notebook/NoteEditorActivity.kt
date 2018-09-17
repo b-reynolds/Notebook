@@ -17,6 +17,11 @@ class NoteEditorActivity : AppCompatActivity() {
         initializeDatabase()
         initializeViewModel()
         initializeActionButton()
+
+        if (intent.hasExtra(EXTRA_NOTE_UID)) {
+            val noteUid = intent.getLongExtra(EXTRA_NOTE_UID, 0)
+            viewModel.loadNote(noteUid, tvTitle, tvBody)
+        }
     }
 
     private fun initializeActionButton() {
