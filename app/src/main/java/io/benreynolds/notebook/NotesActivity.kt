@@ -64,7 +64,7 @@ class NotesActivity : AppCompatActivity() {
 
         rvNotes.layoutManager = LinearLayoutManager(this)
         rvNotes.addItemDecoration(
-                DividerItemDecoration(applicationContext, ClipDrawable.HORIZONTAL)
+            DividerItemDecoration(applicationContext, ClipDrawable.HORIZONTAL)
         )
 
         rvNotes.clearOnScrollListeners()
@@ -79,7 +79,11 @@ class NotesActivity : AppCompatActivity() {
             }
         })
 
-        rvNotes.adapter = NoteAdapter(mutableListOf(), this)
+        rvNotes.adapter = NoteAdapter(mutableListOf(), this) {
+            Timber.d("Starting NoteEditorActivity...")
+            startActivity(Intent(this, NoteEditorActivity::class.java))
+        }
+
         viewModel.notes.observe(this, Observer {
             it?.let { notes ->
                 (rvNotes.adapter as NoteAdapter).addNotes(notes)

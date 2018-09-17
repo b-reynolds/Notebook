@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.item_note.view.clRoot
 import kotlinx.android.synthetic.main.item_note.view.tvBody
 import kotlinx.android.synthetic.main.item_note.view.tvTitle
 import timber.log.Timber
 
 class NoteAdapter(
     val items: MutableList<Note>,
-    val context: Context
+    val context: Context,
+    val onNoteClicked: ((Note) -> Unit)? = null
 ) : RecyclerView.Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -24,6 +27,9 @@ class NoteAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvTitle.text = items[position].title
         holder.tvBody.text = items[position].body
+        holder.clRoot.setOnClickListener {
+            onNoteClicked?.invoke(items[position])
+        }
     }
 
     override fun getItemCount() = items.size
@@ -48,6 +54,7 @@ class NoteAdapter(
 }
 
 class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val clRoot: ConstraintLayout = view.clRoot
     val tvTitle: TextView = view.tvTitle
     val tvBody: TextView = view.tvBody
 }
