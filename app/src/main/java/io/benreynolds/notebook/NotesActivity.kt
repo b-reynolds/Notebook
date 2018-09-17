@@ -1,11 +1,13 @@
 package io.benreynolds.notebook
 
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
 import android.graphics.drawable.ClipDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_notes.*
@@ -21,10 +23,23 @@ class NotesActivity : AppCompatActivity() {
 
         initializeDatabase()
         initializeViewModel()
-        initializeRecyclerView()
+        initializeNoteList()
+        initializeAddButton()
     }
 
-    private fun initializeRecyclerView() {
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.loadNotes()
+    }
+
+    private fun initializeAddButton() {
+        fbAdd.setOnClickListener {
+            startActivity(Intent(this, NoteEditorActivity::class.java))
+        }
+    }
+
+    private fun initializeNoteList() {
         rvNotes.layoutManager = LinearLayoutManager(this)
         rvNotes.addItemDecoration(
                 DividerItemDecoration(applicationContext, ClipDrawable.HORIZONTAL)
@@ -42,12 +57,18 @@ class NotesActivity : AppCompatActivity() {
             }
         })
 
-        rvNotes.adapter = NoteAdapter(mutableListOf(), this)
+        rvNotes.adapter = NoteAdapter(mutableListOf(), this) {
+            Log.i("Test", "You clicked " + it.toString())
+        }
+
         viewModel.notes.observe(this, Observer { it ->
             it?.let {
-                (rvNotes.adapter as NoteAdapter).addItems(it)
+                rvNotes.adapter = NoteAdapter(it as MutableList<Note>, this)  {
+                    Log.i("Test", "You clicked " + it.toString())
+                }
             }
         })
+
     }
 
     private fun initializeDatabase() {
