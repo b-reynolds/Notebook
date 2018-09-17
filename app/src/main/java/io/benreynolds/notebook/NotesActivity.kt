@@ -1,17 +1,18 @@
 package io.benreynolds.notebook
 
 import android.content.Intent
+import android.graphics.drawable.ClipDrawable
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.room.Room
-import android.graphics.drawable.ClipDrawable
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.activity_notes.*
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import kotlinx.android.synthetic.main.activity_notes.fbAdd
+import kotlinx.android.synthetic.main.activity_notes.rvNotes
+import timber.log.Timber
 
 class NotesActivity : AppCompatActivity() {
     private lateinit var notesDatabase: NoteDatabase
@@ -34,12 +35,33 @@ class NotesActivity : AppCompatActivity() {
     }
 
     private fun initializeAddButton() {
+        Timber.d("Initializing add button...")
         fbAdd.setOnClickListener {
+            Timber.d("Starting NoteEditorActivity...")
             startActivity(Intent(this, NoteEditorActivity::class.java))
         }
     }
 
+    private fun initializeDatabase() {
+        Timber.d("Initializing database...")
+        notesDatabase = Room.databaseBuilder(
+                application.applicationContext,
+                NoteDatabase::class.java,
+                NoteDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    private fun initializeViewModel() {
+        Timber.d("Initializing view model...")
+        viewModel = ViewModelProviders.of(
+                this,
+                NotesViewModelFactory(notesDatabase)
+        )[NotesViewModel::class.java]
+    }
+
     private fun initializeNoteList() {
+        Timber.d("Initializing note list...")
+
         rvNotes.layoutManager = LinearLayoutManager(this)
         rvNotes.addItemDecoration(
                 DividerItemDecoration(applicationContext, ClipDrawable.HORIZONTAL)
@@ -57,32 +79,11 @@ class NotesActivity : AppCompatActivity() {
             }
         })
 
-        rvNotes.adapter = NoteAdapter(mutableListOf(), this) {
-            Log.i("Test", "You clicked " + it.toString())
-        }
-
-        viewModel.notes.observe(this, Observer { it ->
-            it?.let {
-                rvNotes.adapter = NoteAdapter(it as MutableList<Note>, this)  {
-                    Log.i("Test", "You clicked " + it.toString())
-                }
+        rvNotes.adapter = NoteAdapter(mutableListOf(), this)
+        viewModel.notes.observe(this, Observer {
+            it?.let { notes ->
+                (rvNotes.adapter as NoteAdapter).addNotes(notes)
             }
         })
-
-    }
-
-    private fun initializeDatabase() {
-        notesDatabase = Room.databaseBuilder(
-                application.applicationContext,
-                NoteDatabase::class.java,
-                NoteDatabase.DATABASE_NAME
-        ).build()
-    }
-
-    private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(
-                this,
-                NotesViewModelFactory(notesDatabase)
-        )[NotesViewModel::class.java]
     }
 }
