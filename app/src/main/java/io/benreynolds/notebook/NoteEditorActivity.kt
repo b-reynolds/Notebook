@@ -1,11 +1,8 @@
 package io.benreynolds.notebook
 
-import android.opengl.Visibility
 import android.os.Bundle
-import android.text.InputType
 import android.text.method.ScrollingMovementMethod
-import android.view.View
-import android.widget.Button
+import android.view.Menu
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -45,6 +42,20 @@ class NoteEditorActivity : AppCompatActivity() {
 //            val noteUid = intent.getLongExtra(EXTRA_NOTE_UID, -1)
 //            viewModel.loadNote(noteUid, tvTitle, tvBody)
 //        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_editor, menu)
+
+        val doneButton = menu.findItem(R.id.mbDone)
+        val editButton = menu.findItem(R.id.mbEdit)
+
+        viewModel.editMode.observe(this, Observer {
+            doneButton?.isVisible = it
+            editButton?.isVisible = !it
+        })
+
+        return true
     }
 
     private fun initializeDatabase() {
