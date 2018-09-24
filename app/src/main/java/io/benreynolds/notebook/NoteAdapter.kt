@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_note.view.clRoot
-import kotlinx.android.synthetic.main.item_note.view.tvBody
-import kotlinx.android.synthetic.main.item_note.view.tvTitle
+import kotlinx.android.synthetic.main.item_note.view.*
 import timber.log.Timber
 
 class NoteAdapter(

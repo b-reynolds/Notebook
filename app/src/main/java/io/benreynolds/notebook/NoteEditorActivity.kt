@@ -1,7 +1,10 @@
 package io.benreynolds.notebook
 
 import android.os.Bundle
+import android.text.InputType
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_note_editor.*
@@ -16,20 +19,24 @@ class NoteEditorActivity : AppCompatActivity() {
 
         initializeDatabase()
         initializeViewModel()
-        initializeActionButton()
 
-        if (intent.hasExtra(EXTRA_NOTE_UID)) {
-            val noteUid = intent.getLongExtra(EXTRA_NOTE_UID, 0)
-            viewModel.loadNote(noteUid, tvTitle, tvBody)
-        }
-    }
+        viewModel.editMode.observe(this, Observer { editMode ->
+            etTitle.inputType = if (editMode) InputType.TYPE_TEXT_VARIATION_NORMAL else InputType.TYPE_NULL
+            etBody.inputType = if (editMode) InputType.TYPE_TEXT_FLAG_MULTI_LINE else InputType.TYPE_NULL
+        })
 
-    private fun initializeActionButton() {
-        fbConfirm.setOnClickListener {
-            viewModel.saveNote(Note(title = tvTitle.text.toString(), body = tvBody.text.toString())) {
-                finish()
+        button.setOnClickListener {
+            viewModel.editMode.value?.let { currentValue ->
+                viewModel.editMode.value = !currentValue
             }
+
+            (it as Button).text = viewModel.editMode.value.toString()
         }
+
+//        if (intent.hasExtra(EXTRA_NOTE_UID)) {
+//            val noteUid = intent.getLongExtra(EXTRA_NOTE_UID, -1)
+//            viewModel.loadNote(noteUid, tvTitle, tvBody)
+//        }
     }
 
     private fun initializeDatabase() {
