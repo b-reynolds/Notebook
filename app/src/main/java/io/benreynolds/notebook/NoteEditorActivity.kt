@@ -1,8 +1,13 @@
 package io.benreynolds.notebook
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.text.InputType
+import android.text.method.ScrollingMovementMethod
+import android.view.View
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -20,18 +25,21 @@ class NoteEditorActivity : AppCompatActivity() {
         initializeDatabase()
         initializeViewModel()
 
+        tvBody.movementMethod = ScrollingMovementMethod()
+
         viewModel.editMode.observe(this, Observer { editMode ->
-            etTitle.inputType = if (editMode) InputType.TYPE_TEXT_VARIATION_NORMAL else InputType.TYPE_NULL
-            etBody.inputType = if (editMode) InputType.TYPE_TEXT_FLAG_MULTI_LINE else InputType.TYPE_NULL
+            etTitle.visibility = if (editMode) EditText.VISIBLE else EditText.GONE
+            etBody.visibility = if (editMode) EditText.VISIBLE else EditText.GONE
+            tvTitle.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
+            tvBody.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
         })
 
-        button.setOnClickListener {
-            viewModel.editMode.value?.let { currentValue ->
-                viewModel.editMode.value = !currentValue
+        floatingActionButton.setOnClickListener {
+            viewModel.editMode.value?.let { value ->
+                viewModel.editMode.value = !value
             }
-
-            (it as Button).text = viewModel.editMode.value.toString()
         }
+
 
 //        if (intent.hasExtra(EXTRA_NOTE_UID)) {
 //            val noteUid = intent.getLongExtra(EXTRA_NOTE_UID, -1)
