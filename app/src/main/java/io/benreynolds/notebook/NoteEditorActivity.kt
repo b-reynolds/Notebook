@@ -1,8 +1,11 @@
 package io.benreynolds.notebook
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.method.ScrollingMovementMethod
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +14,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_note_editor.*
 
+private const val MENU_BTN_ALPHA_ENABLED = 255
+private const val MENU_BTN_ALPHA_DISABLED = 130
+
 class NoteEditorActivity : AppCompatActivity() {
     private lateinit var notesDatabase: NoteDatabase
     private lateinit var viewModel: NoteEditorViewModel
+
+    private var doneButton: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,33 +29,14 @@ class NoteEditorActivity : AppCompatActivity() {
 
         initializeDatabase()
         initializeViewModel()
-
-        tvBody.movementMethod = ScrollingMovementMethod()
-
-        viewModel.editMode.observe(this, Observer { editMode ->
-            etTitle.visibility = if (editMode) EditText.VISIBLE else EditText.GONE
-            etBody.visibility = if (editMode) EditText.VISIBLE else EditText.GONE
-            tvTitle.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
-            tvBody.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
-        })
-
-        floatingActionButton.setOnClickListener {
-            viewModel.editMode.value?.let { value ->
-                viewModel.editMode.value = !value
-            }
-        }
-
-
-//        if (intent.hasExtra(EXTRA_NOTE_UID)) {
-//            val noteUid = intent.getLongExtra(EXTRA_NOTE_UID, -1)
-//            viewModel.loadNote(noteUid, tvTitle, tvBody)
-//        }
+        initializeViewMode()
+        initializeEditMode()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_editor, menu)
 
-        val doneButton = menu.findItem(R.id.mbDone)
+        doneButton = menu.findItem(R.id.mbDone)
         val editButton = menu.findItem(R.id.mbEdit)
 
         viewModel.editMode.observe(this, Observer {
@@ -56,6 +45,26 @@ class NoteEditorActivity : AppCompatActivity() {
         })
 
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.mbDone) {
+            viewModel.saveNote(etTitle.text.toString(), etBody.text.toString())
+            viewModel.exitEditMode()
+        } else if (item.itemId == R.id.mbEdit) {
+            viewModel.enterEditMode()
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun updateDoneButtonState() {
+        doneButton?.let {
+            val isValidNote = viewModel.isValidNote(etTitle.text.toString(), etBody.text.toString())
+
+            it.isEnabled = isValidNote
+            it.icon?.alpha = if (isValidNote) MENU_BTN_ALPHA_ENABLED else MENU_BTN_ALPHA_DISABLED
+        }
     }
 
     private fun initializeDatabase() {
@@ -71,5 +80,25 @@ class NoteEditorActivity : AppCompatActivity() {
                 this,
                 NoteEditorViewModelFactory(notesDatabase)
         )[NoteEditorViewModel::class.java]
+    }
+
+    private fun initializeViewMode() {
+        tvBody.movementMethod = ScrollingMovementMethod()
+    }
+
+    private fun initializeEditMode() {
+        viewModel.editMode.observe(this, Observer { editMode ->
+            etTitle.visibility = if (editMode) EditText.VISIBLE else EditText.GONE
+            etBody.visibility = if (editMode) EditText.VISIBLE else EditText.GONE
+            tvTitle.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
+            tvBody.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
+        })
+
+        updateDoneButtonState()
+        etTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(cs: CharSequence, s: Int, b: Int, a: Int) {}
+            override fun onTextChanged(cs: CharSequence, s: Int, b: Int, a: Int) {}
+            override fun afterTextChanged(editable: Editable) = updateDoneButtonState()
+        })
     }
 }
