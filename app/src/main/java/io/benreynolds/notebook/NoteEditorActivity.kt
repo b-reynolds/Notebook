@@ -48,6 +48,8 @@ class NoteEditorActivity : AppCompatActivity() {
             editButton?.isVisible = !it
         })
 
+        updateDoneButtonState()
+
         return true
     }
 
@@ -104,7 +106,6 @@ class NoteEditorActivity : AppCompatActivity() {
             tvBody.visibility = if (editMode) TextView.GONE else TextView.VISIBLE
         })
 
-        updateDoneButtonState()
         etTitle.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(cs: CharSequence, s: Int, b: Int, a: Int) {}
             override fun onTextChanged(cs: CharSequence, s: Int, b: Int, a: Int) {}

@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_notes.fbAdd
 import kotlinx.android.synthetic.main.activity_notes.rvNotes
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import timber.log.Timber
 
 public const val EXTRA_NOTE_UID = "NOTE_UID"
