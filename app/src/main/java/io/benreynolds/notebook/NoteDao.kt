@@ -1,9 +1,6 @@
 package io.benreynolds.notebook
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 /**
  * Interface containing methods for interacting with a database containing [Note]s.
@@ -22,7 +19,7 @@ interface NoteDao {
     /**
      * Inserts [Note]s into the database.
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg notes: Note)
 
     /**

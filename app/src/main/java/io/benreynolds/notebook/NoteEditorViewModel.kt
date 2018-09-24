@@ -20,10 +20,14 @@ class NoteEditorViewModel(noteDatabase: NoteDatabase) : ViewModel() {
         return !title.isBlank()
     }
 
-    fun loadNote(noteUid: Long) {
+    fun loadNote(noteUid: Long, callback: (Note) -> Unit) {
         launch(UI) {
             activeNote.value = withContext(DefaultDispatcher) {
                 noteDao.getNote(noteUid)
+            }
+
+            activeNote.value?.let {
+                callback(it)
             }
         }
     }
@@ -31,6 +35,11 @@ class NoteEditorViewModel(noteDatabase: NoteDatabase) : ViewModel() {
     fun saveNote(title: String, body: String) {
         if (activeNote.value == null) {
             activeNote.value = Note(title = title, body = body)
+        } else {
+            activeNote.value?.let {
+                it.title = title
+                it.body = body
+            }
         }
 
         activeNote.value?.let {

@@ -32,7 +32,16 @@ class NoteEditorActivity : AppCompatActivity() {
         initializeViewMode()
         initializeEditMode()
 
-        if (!intent.hasExtra(EXTRA_NOTE_UID)) {
+        if (intent.hasExtra(EXTRA_NOTE_UID)) {
+            intent.extras?.getLong(EXTRA_NOTE_UID)?.let {
+                viewModel.loadNote(it) { note ->
+                    etTitle.setText(note.title)
+                    etBody.setText(note.body)
+                    synchronizeModes()
+                    viewModel.exitEditMode()
+                }
+            }
+        } else {
             viewModel.enterEditMode()
         }
     }

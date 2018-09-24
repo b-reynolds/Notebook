@@ -35,14 +35,17 @@ class NoteAdapter(
     fun addNotes(notes: List<Note>) {
         Timber.d("addNotes called with '%d' items, '%d' currently in list.", notes.count(), items.count())
 
-        val notesToAdd = notes.filter { note ->
-            items.find { it.uid == note.uid } == null
-        }
+        val notesToAdd = notes.filter { !items.contains(it) }
 
         if (notesToAdd.isEmpty()) {
             Timber.d("Ignoring addNotes call, no new notes found.")
         } else {
             Timber.d("Adding '%d' notes: '%s'", notesToAdd.count(), notesToAdd.joinToString())
+
+            items.removeAll { item ->
+                notesToAdd.find { it.uid == item.uid } != null
+            }
+
             items.addAll(notesToAdd)
 
             Timber.d("Calling notifyDataSetChanged...")
