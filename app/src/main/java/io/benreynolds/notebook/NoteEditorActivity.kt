@@ -31,6 +31,10 @@ class NoteEditorActivity : AppCompatActivity() {
         initializeViewModel()
         initializeViewMode()
         initializeEditMode()
+
+        if (!intent.hasExtra(EXTRA_NOTE_UID)) {
+            viewModel.enterEditMode()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -50,6 +54,7 @@ class NoteEditorActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.mbDone) {
             viewModel.saveNote(etTitle.text.toString(), etBody.text.toString())
+            synchronizeModes()
             viewModel.exitEditMode()
         } else if (item.itemId == R.id.mbEdit) {
             viewModel.enterEditMode()
@@ -65,6 +70,11 @@ class NoteEditorActivity : AppCompatActivity() {
             it.isEnabled = isValidNote
             it.icon?.alpha = if (isValidNote) MENU_BTN_ALPHA_ENABLED else MENU_BTN_ALPHA_DISABLED
         }
+    }
+
+    private fun synchronizeModes() {
+        tvTitle.text = etTitle.text
+        tvBody.text = etBody.text
     }
 
     private fun initializeDatabase() {
