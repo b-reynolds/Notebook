@@ -1,16 +1,19 @@
 package io.benreynolds.notebook
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_note.view.*
+import timber.log.Timber
 
 class NoteAdapter(
     val items: MutableList<Note>,
-    val context: Context
+    val context: Context,
+    val onNoteClicked: ((Note) -> Unit)? = null
 ) : RecyclerView.Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -19,24 +22,40 @@ class NoteAdapter(
         )
     }
 
-    fun addItems(items: List<Note>) {
-        this.items.addAll(
-                items.filter { note ->
-                    this.items.find { it.uid != note.uid } == null
-                }
-        )
-        notifyDataSetChanged()
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvTitle.text = items[position].title
         holder.tvBody.text = items[position].body
+        holder.clRoot.setOnClickListener {
+            onNoteClicked?.invoke(items[position])
+        }
     }
 
     override fun getItemCount() = items.size
+
+    fun addNotes(notes: List<Note>) {
+        Timber.d("addNotes called with '%d' items, '%d' currently in list.", notes.count(), items.count())
+
+        val notesToAdd = notes.filter { !items.contains(it) }
+
+        if (notesToAdd.isEmpty()) {
+            Timber.d("Ignoring addNotes call, no new notes found.")
+        } else {
+            Timber.d("Adding '%d' notes: '%s'", notesToAdd.count(), notesToAdd.joinToString())
+
+            items.removeAll { item ->
+                notesToAdd.find { it.uid == item.uid } != null
+            }
+
+            items.addAll(notesToAdd)
+
+            Timber.d("Calling notifyDataSetChanged...")
+            notifyDataSetChanged()
+        }
+    }
 }
 
 class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val clRoot: ConstraintLayout = view.clRoot
     val tvTitle: TextView = view.tvTitle
     val tvBody: TextView = view.tvBody
 }

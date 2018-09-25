@@ -37,4 +37,20 @@ class Note(
 
     @ColumnInfo(name = "last_modified")
     var lastModified = Date()
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Note) {
+            return other.uid == uid && other.title == title && other.body == body
+        }
+
+        return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = uid?.hashCode() ?: 0
+        result = 31 * result + title.hashCode()
+        result = 31 * result + body.hashCode()
+        result = 31 * result + lastModified.hashCode()
+        return result
+    }
 }

@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clRoot"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -32,12 +35,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
         android:ellipsize="end"
         android:maxLines="3"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         tools:text="RecyclerView is used to load views to the activity when you don’t know how many views we need, or have a large number of individual item views to display in one activity. It saves memory by reusing views when you scroll in an activity instead of creating them all at the beginning when the activity first loads." />
