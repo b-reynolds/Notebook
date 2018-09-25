@@ -3,6 +3,7 @@ package io.benreynolds.notebook
 import android.content.Intent
 import android.graphics.drawable.ClipDrawable
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -38,6 +39,13 @@ class NotesActivity : AppCompatActivity() {
 
         viewModel.loadNotes()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_notes, menu)
+
+        return true
+    }
+
 
     private fun initializeAddButton() {
         Timber.d("Initializing add button...")
