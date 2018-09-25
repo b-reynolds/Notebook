@@ -2,4 +2,5 @@
     <string name="app_name">Notebook</string>
     <string name="text_edit_button">Edit</string>
     <string name="text_done_button">Done</string>
+    <string name="text_organise_button">Organise</string>
 </resources>
