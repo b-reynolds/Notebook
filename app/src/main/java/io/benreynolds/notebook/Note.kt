@@ -35,8 +35,11 @@ class Note(
             }
         }
 
+    @ColumnInfo(name = "date_created")
+    var dateCreated = Date()
+
     @ColumnInfo(name = "last_modified")
-    var lastModified = Date()
+    var lastModified = dateCreated
 
     override fun equals(other: Any?): Boolean {
         if (other is Note) {
@@ -51,6 +54,7 @@ class Note(
         result = 31 * result + title.hashCode()
         result = 31 * result + body.hashCode()
         result = 31 * result + lastModified.hashCode()
+        result = 31 * result + dateCreated.hashCode()
         return result
     }
 }

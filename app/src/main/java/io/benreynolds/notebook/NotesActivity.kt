@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.ClipDrawable
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -13,12 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_notes.fbAdd
 import kotlinx.android.synthetic.main.activity_notes.rvNotes
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
 import timber.log.Timber
 
-public const val EXTRA_NOTE_UID = "NOTE_UID"
+const val EXTRA_NOTE_UID = "NOTE_UID"
 
 class NotesActivity : AppCompatActivity() {
     private lateinit var notesDatabase: NoteDatabase
@@ -46,6 +44,17 @@ class NotesActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        (rvNotes.adapter as? NoteAdapter)?.let {
+            when {
+                item.itemId == R.id.mbAlphabetical -> it.sortMode = NoteAdapter.SortMode.ALPHABETICAL
+                item.itemId == R.id.mbDateCreated -> it.sortMode = NoteAdapter.SortMode.DATE_CREATED
+                item.itemId == R.id.mbLastModified -> it.sortMode = NoteAdapter.SortMode.LAST_MODIFIED
+            }
+        }
+
+        return super.onContextItemSelected(item)
+    }
 
     private fun initializeAddButton() {
         Timber.d("Initializing add button...")
@@ -58,17 +67,17 @@ class NotesActivity : AppCompatActivity() {
     private fun initializeDatabase() {
         Timber.d("Initializing database...")
         notesDatabase = Room.databaseBuilder(
-                application.applicationContext,
-                NoteDatabase::class.java,
-                NoteDatabase.DATABASE_NAME
+            application.applicationContext,
+            NoteDatabase::class.java,
+            NoteDatabase.DATABASE_NAME
         ).build()
     }
 
     private fun initializeViewModel() {
         Timber.d("Initializing view model...")
         viewModel = ViewModelProviders.of(
-                this,
-                NotesViewModelFactory(notesDatabase)
+            this,
+            NotesViewModelFactory(notesDatabase)
         )[NotesViewModel::class.java]
     }
 

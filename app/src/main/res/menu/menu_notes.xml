@@ -4,9 +4,19 @@
 
     <item
         android:id="@+id/mbOrganise"
-        android:icon="@drawable/ic_reorder_white_24dp"
+        android:icon="@drawable/ic_sort_white_24dp"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:title="@string/text_organise_button" />
+        android:title="@string/text_organise_button">
+
+        <menu>
+            <item android:id="@+id/mbAlphabetical"
+                android:title="@string/text_alphabetical_button"/>
+            <item android:id="@+id/mbLastModified"
+                android:title="@string/text_last_modified_button"/>
+            <item android:id="@+id/mbDateCreated"
+                android:title="@string/text_date_created_button"/>
+        </menu>
+    </item>
 
 </menu>
