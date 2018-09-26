@@ -3,4 +3,7 @@
     <string name="text_edit_button">Edit</string>
     <string name="text_done_button">Done</string>
     <string name="text_organise_button">Organise</string>
+    <string name="text_alphabetical_button">Alphabetical</string>
+    <string name="text_last_modified_button">Last Modified</string>
+    <string name="text_date_created_button">Date Created</string>
 </resources>

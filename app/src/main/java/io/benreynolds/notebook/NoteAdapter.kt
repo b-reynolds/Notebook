@@ -13,12 +13,42 @@ import timber.log.Timber
 class NoteAdapter(
     val items: MutableList<Note>,
     val context: Context,
-    val onNoteClicked: ((Note) -> Unit)? = null
+    private val onNoteClicked: ((Note) -> Unit)? = null
 ) : RecyclerView.Adapter<ViewHolder>() {
+    init {
+        setHasStableIds(true)
+    }
+
+    var sortMode: SortMode = SortMode.LAST_MODIFIED
+        set(value) {
+            field = value
+            updateSortOrder()
+        }
+
+    fun addNotes(notes: List<Note>) {
+        Timber.d("addNotes called with '%d' items, '%d' currently in list.", notes.count(), items.count())
+
+        val notesToAdd = notes.filter { !items.contains(it) }
+        if (notesToAdd.isEmpty()) {
+            Timber.d("Ignoring addNotes call, no new/updated notes were found.")
+            return
+        }
+
+        Timber.d("Adding/replacing '%d' notes...", notesToAdd.count())
+        items.apply {
+            removeAll { item ->
+                notesToAdd.find { it.uid == item.uid } != null
+            }
+            addAll(notesToAdd)
+        }
+
+        updateSortOrder()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-                LayoutInflater.from(context)
-                        .inflate(R.layout.item_note, parent, false)
+            LayoutInflater.from(context)
+                .inflate(R.layout.item_note, parent, false)
         )
     }
 
@@ -30,27 +60,25 @@ class NoteAdapter(
         }
     }
 
+    override fun getItemId(position: Int) = items[position].uid ?: RecyclerView.NO_ID
     override fun getItemCount() = items.size
 
-    fun addNotes(notes: List<Note>) {
-        Timber.d("addNotes called with '%d' items, '%d' currently in list.", notes.count(), items.count())
-
-        val notesToAdd = notes.filter { !items.contains(it) }
-
-        if (notesToAdd.isEmpty()) {
-            Timber.d("Ignoring addNotes call, no new notes found.")
-        } else {
-            Timber.d("Adding '%d' notes: '%s'", notesToAdd.count(), notesToAdd.joinToString())
-
-            items.removeAll { item ->
-                notesToAdd.find { it.uid == item.uid } != null
-            }
-
-            items.addAll(notesToAdd)
-
-            Timber.d("Calling notifyDataSetChanged...")
-            notifyDataSetChanged()
+    private fun updateSortOrder() {
+        Timber.d("Sorting notes... (sortMode: %s)", sortMode.name)
+        when (sortMode) {
+            SortMode.ALPHABETICAL -> items.sortBy { it.title.capitalize() }
+            SortMode.DATE_CREATED -> items.sortBy { it.dateCreated }
+            SortMode.LAST_MODIFIED -> items.sortByDescending { it.lastModified }
         }
+
+        Timber.d("Notifying observers...")
+        notifyDataSetChanged()
+    }
+
+    enum class SortMode {
+        ALPHABETICAL,
+        DATE_CREATED,
+        LAST_MODIFIED
     }
 }
 
