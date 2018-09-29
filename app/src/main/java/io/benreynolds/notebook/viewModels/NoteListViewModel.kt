@@ -1,7 +1,10 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.viewModels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.benreynolds.notebook.databases.entities.Note
+import io.benreynolds.notebook.databases.daos.NoteDao
+import io.benreynolds.notebook.databases.NoteDatabase
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch

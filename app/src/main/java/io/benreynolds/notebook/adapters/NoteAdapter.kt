@@ -1,4 +1,4 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import io.benreynolds.notebook.R
+import io.benreynolds.notebook.databases.entities.Note
 import kotlinx.android.synthetic.main.item_note.view.*
 import timber.log.Timber
 

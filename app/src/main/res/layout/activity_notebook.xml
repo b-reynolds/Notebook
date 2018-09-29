@@ -5,5 +5,5 @@
     android:id="@+id/clRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NotebookActivity">
+    tools:context=".activities.NotebookActivity">
 </androidx.constraintlayout.widget.ConstraintLayout>

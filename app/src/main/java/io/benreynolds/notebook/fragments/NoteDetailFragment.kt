@@ -1,4 +1,4 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -9,6 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
+import io.benreynolds.notebook.databases.NoteDatabase
+import io.benreynolds.notebook.R
+import io.benreynolds.notebook.viewModels.NoteDetailViewModel
+import io.benreynolds.notebook.viewModels.NoteDetailViewModelFactory
+import io.benreynolds.notebook.viewModels.NotebookViewModel
 import timber.log.Timber
 
 class NoteDetailFragment() : Fragment() {

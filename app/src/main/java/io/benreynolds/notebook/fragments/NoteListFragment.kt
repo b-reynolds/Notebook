@@ -1,4 +1,4 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -14,6 +14,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import io.benreynolds.notebook.databases.entities.Note
+import io.benreynolds.notebook.adapters.NoteAdapter
+import io.benreynolds.notebook.databases.NoteDatabase
+import io.benreynolds.notebook.R
+import io.benreynolds.notebook.viewModels.NoteListViewModel
+import io.benreynolds.notebook.viewModels.NoteListViewModelFactory
+import io.benreynolds.notebook.viewModels.NotebookViewModel
 import kotlinx.android.synthetic.main.fragment_note_list.*
 import timber.log.Timber
 

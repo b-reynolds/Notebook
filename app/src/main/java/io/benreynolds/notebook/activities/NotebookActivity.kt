@@ -1,10 +1,15 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.activities
 
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
+import io.benreynolds.notebook.databases.NoteDatabase
+import io.benreynolds.notebook.R
+import io.benreynolds.notebook.fragments.NoteListFragment
+import io.benreynolds.notebook.viewModels.NotebookViewModel
+import io.benreynolds.notebook.viewModels.NotebookViewModelFactory
 import timber.log.Timber
 
 class NotebookActivity : AppCompatActivity() {
@@ -40,7 +45,7 @@ class NotebookActivity : AppCompatActivity() {
         notesDatabase = Room.databaseBuilder(
                 applicationContext,
                 NoteDatabase::class.java,
-                NoteDatabase.DATABASE_NAME
+            NoteDatabase.DATABASE_NAME
         ).build()
     }
 

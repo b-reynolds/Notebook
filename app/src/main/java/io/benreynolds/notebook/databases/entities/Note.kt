@@ -1,4 +1,4 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.databases.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
