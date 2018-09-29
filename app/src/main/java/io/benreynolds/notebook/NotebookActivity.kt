@@ -17,7 +17,8 @@ class NotebookActivity : AppCompatActivity() {
 
         initializeDatabase()
         initializeViewModel()
-        initializeNoteListFragment()
+
+        addNoteListFragment()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -26,7 +27,8 @@ class NotebookActivity : AppCompatActivity() {
         return true
     }
 
-    private fun initializeNoteListFragment() {
+    private fun addNoteListFragment() {
+        Timber.d("adding NoteListFragment...")
         supportFragmentManager
                 .beginTransaction()
                 .add(R.id.clRoot, NoteListFragment())
@@ -34,7 +36,7 @@ class NotebookActivity : AppCompatActivity() {
     }
 
     private fun initializeDatabase() {
-        Timber.d("Initializing database...")
+        Timber.d("Initialising database...")
         notesDatabase = Room.databaseBuilder(
                 applicationContext,
                 NoteDatabase::class.java,
@@ -43,9 +45,8 @@ class NotebookActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProviders.of(
-                this,
-                NotebookViewModelFactory(notesDatabase)
-        )[NotebookViewModel::class.java]
+        Timber.d("Initialising shared view model...")
+        viewModel = ViewModelProviders.of(this, NotebookViewModelFactory(notesDatabase))
+                .get(NotebookViewModel::class.java)
     }
 }

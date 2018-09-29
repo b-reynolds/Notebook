@@ -1,7 +1,6 @@
 package io.benreynolds.notebook
 
 import android.content.Context
-import android.graphics.drawable.ClipDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -14,10 +13,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
-import kotlinx.android.synthetic.main.activity_notes.*
+import kotlinx.android.synthetic.main.fragment_note_list.rvNotes
 import timber.log.Timber
 
-class NoteListFragment() : Fragment() {
+class NoteListFragment : Fragment() {
     private lateinit var notesDatabase: NoteDatabase
     private lateinit var sharedViewModel: NotebookViewModel
     private lateinit var viewModel: NoteListViewModel
@@ -37,7 +36,11 @@ class NoteListFragment() : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.fragment_note_list, container, false)
     }
 
@@ -50,6 +53,7 @@ class NoteListFragment() : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        Timber.d("Requesting latest notes...")
         viewModel.loadNotes()
     }
 
@@ -65,33 +69,39 @@ class NoteListFragment() : Fragment() {
         return super.onContextItemSelected(item)
     }
 
-    private fun initializeNoteList() {
-        Timber.d("Initialising RecyclerView...")
-        rvNotes.layoutManager = LinearLayoutManager(context)
-        rvNotes.addItemDecoration(DividerItemDecoration(context, ClipDrawable.HORIZONTAL))
-        rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext())
-
-        viewModel.notes.observe(this, Observer {
-            it?.let { notes ->
-                (rvNotes.adapter as NoteAdapter).addNotes(notes)
-            }
-        })
+    private fun onNotesChanged(notes: List<Note>) {
+        Timber.d("Observed of notes change, updating RecyclerView adapter...")
+        with(rvNotes.adapter as NoteAdapter) {
+            addNotes(notes)
+        }
     }
 
     private fun initializeDatabase(activity: FragmentActivity) {
-        Timber.d("Initializing database...")
+        Timber.d("Initialising database...")
         notesDatabase = Room.databaseBuilder(
-                activity.applicationContext,
-                NoteDatabase::class.java,
-                NoteDatabase.DATABASE_NAME
+            activity.applicationContext,
+            NoteDatabase::class.java,
+            NoteDatabase.DATABASE_NAME
         ).build()
     }
 
     private fun initializeViewModels(activity: FragmentActivity) {
+        Timber.d("Initialising shared view model...")
         sharedViewModel = ViewModelProviders.of(activity)
-                .get(NotebookViewModel::class.java)
+            .get(NotebookViewModel::class.java)
 
+        Timber.d("Initialising view model...")
         viewModel = ViewModelProviders.of(this, NoteListViewModelFactory(notesDatabase))
-                .get(NoteListViewModel::class.java)
+            .get(NoteListViewModel::class.java)
+    }
+
+    private fun initializeNoteList() {
+        Timber.d("Initialising RecyclerView...")
+        rvNotes.addItemDecoration(DividerItemDecoration(rvNotes.context, DividerItemDecoration.VERTICAL))
+        rvNotes.layoutManager = LinearLayoutManager(context)
+        rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext())
+
+        Timber.d("Adding notes observer...")
+        viewModel.notes.observe(this, Observer { onNotesChanged(it) })
     }
 }

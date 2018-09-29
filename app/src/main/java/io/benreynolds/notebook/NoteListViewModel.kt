@@ -6,6 +6,7 @@ import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import timber.log.Timber
 
 class NoteListViewModel(noteDatabase: NoteDatabase) : ViewModel() {
     private val noteDao: NoteDao = noteDatabase.noteDao()
@@ -13,9 +14,13 @@ class NoteListViewModel(noteDatabase: NoteDatabase) : ViewModel() {
 
     fun loadNotes() {
         launch(UI) {
-            notes.value = withContext(DefaultDispatcher) {
+            Timber.d("Loading notes from the database...")
+            val loadedNotes = withContext(DefaultDispatcher) {
                 noteDao.getAll()
             }
+
+            Timber.d("Updating live data with loaded notes...")
+            notes.value = loadedNotes
         }
     }
 }
