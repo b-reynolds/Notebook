@@ -12,7 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import kotlinx.android.synthetic.main.activity_notes.*
 import kotlinx.android.synthetic.main.fragment_note_list.rvNotes
 import timber.log.Timber
 
@@ -97,9 +99,24 @@ class NoteListFragment : Fragment() {
 
     private fun initializeNoteList() {
         Timber.d("Initialising RecyclerView...")
-        rvNotes.addItemDecoration(DividerItemDecoration(rvNotes.context, DividerItemDecoration.VERTICAL))
         rvNotes.layoutManager = LinearLayoutManager(context)
         rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext())
+
+        rvNotes.clearOnScrollListeners()
+        rvNotes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, scrollState: Int) {
+                when (scrollState) {
+                    RecyclerView.SCROLL_STATE_IDLE -> fbAdd.show()
+                    else -> fbAdd.hide()
+                }
+
+                super.onScrollStateChanged(recyclerView, scrollState)
+            }
+        })
+
+        rvNotes.addItemDecoration(
+            DividerItemDecoration(rvNotes.context, DividerItemDecoration.VERTICAL)
+        )
 
         Timber.d("Adding notes observer...")
         viewModel.notes.observe(this, Observer { onNotesChanged(it) })
