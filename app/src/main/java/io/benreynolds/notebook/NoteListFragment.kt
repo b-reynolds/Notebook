@@ -1,6 +1,5 @@
 package io.benreynolds.notebook
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.ClipDrawable
 import android.os.Bundle
@@ -14,11 +13,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import kotlinx.android.synthetic.main.activity_notes.*
 import timber.log.Timber
 
 class NoteListFragment() : Fragment() {
-    private lateinit var viewModel: NotebookViewModel
+    private lateinit var notesDatabase: NoteDatabase
+    private lateinit var sharedViewModel: NotebookViewModel
+    private lateinit var viewModel: NoteListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +35,11 @@ class NoteListFragment() : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        initializeViewModel(context as FragmentActivity)
+        with(context as FragmentActivity) {
+            initializeDatabase(this)
+            initializeViewModels(this)
+        }
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -44,11 +48,11 @@ class NoteListFragment() : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        (rvNotes.adapter as? NoteAdapter)?.let {
+        with(rvNotes.adapter as NoteAdapter) {
             when {
-                item.itemId == R.id.mbAlphabetical -> it.sortMode = NoteAdapter.SortMode.ALPHABETICAL
-                item.itemId == R.id.mbDateCreated -> it.sortMode = NoteAdapter.SortMode.DATE_CREATED
-                item.itemId == R.id.mbLastModified -> it.sortMode = NoteAdapter.SortMode.LAST_MODIFIED
+                item.itemId == R.id.mbAlphabetical -> sortMode = NoteAdapter.SortMode.ALPHABETICAL
+                item.itemId == R.id.mbDateCreated -> sortMode = NoteAdapter.SortMode.DATE_CREATED
+                item.itemId == R.id.mbLastModified -> sortMode = NoteAdapter.SortMode.LAST_MODIFIED
             }
         }
 
@@ -58,7 +62,7 @@ class NoteListFragment() : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        viewModel.loadNotes()
+        sharedViewModel.loadNotes()
     }
 
     private fun initializeNoteList() {
@@ -67,15 +71,27 @@ class NoteListFragment() : Fragment() {
         rvNotes.addItemDecoration(DividerItemDecoration(context, ClipDrawable.HORIZONTAL))
         rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext())
 
-        viewModel.notes.observe(this, Observer {
+        sharedViewModel.notes.observe(this, Observer {
             it?.let { notes ->
                 (rvNotes.adapter as NoteAdapter).addNotes(notes)
             }
         })
     }
 
-    private fun initializeViewModel(activity: FragmentActivity) {
-        viewModel = ViewModelProviders.of(activity)
-            .get(NotebookViewModel::class.java)
+    private fun initializeDatabase(activity: FragmentActivity) {
+        Timber.d("Initializing database...")
+        notesDatabase = Room.databaseBuilder(
+                activity.applicationContext,
+                NoteDatabase::class.java,
+                NoteDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    private fun initializeViewModels(activity: FragmentActivity) {
+        sharedViewModel = ViewModelProviders.of(activity)
+                .get(NotebookViewModel::class.java)
+
+        viewModel = ViewModelProviders.of(this, NoteListViewModelFactory(notesDatabase))
+                .get(NoteListViewModel::class.java)
     }
 }

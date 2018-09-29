@@ -1,4 +1,4 @@
-package io.benreynolds.notebook;
+package io.benreynolds.notebook
 
 import android.os.Bundle
 import android.view.Menu
@@ -27,24 +27,25 @@ class NotebookActivity : AppCompatActivity() {
     }
 
     private fun initializeNoteListFragment() {
-        supportFragmentManager.beginTransaction()
-            .add(R.id.clRoot, NoteListFragment())
-            .commit()
+        supportFragmentManager
+                .beginTransaction()
+                .add(R.id.clRoot, NoteListFragment())
+                .commit()
     }
 
     private fun initializeDatabase() {
         Timber.d("Initializing database...")
         notesDatabase = Room.databaseBuilder(
-            applicationContext,
-            NoteDatabase::class.java,
-            NoteDatabase.DATABASE_NAME
+                applicationContext,
+                NoteDatabase::class.java,
+                NoteDatabase.DATABASE_NAME
         ).build()
     }
 
     private fun initializeViewModel() {
         viewModel = ViewModelProviders.of(
-            this,
-            NotebookViewModelFactory(notesDatabase)
+                this,
+                NotebookViewModelFactory(notesDatabase)
         )[NotebookViewModel::class.java]
     }
 }
