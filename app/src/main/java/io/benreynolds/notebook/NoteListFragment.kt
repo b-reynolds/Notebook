@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import kotlinx.android.synthetic.main.activity_notes.*
-import kotlinx.android.synthetic.main.fragment_note_list.rvNotes
+import kotlinx.android.synthetic.main.fragment_note_list.*
 import timber.log.Timber
 
 class NoteListFragment : Fragment() {
