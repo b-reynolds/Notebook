@@ -22,6 +22,15 @@ class NoteListFragment() : Fragment() {
     private lateinit var sharedViewModel: NotebookViewModel
     private lateinit var viewModel: NoteListViewModel
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        with(context as FragmentActivity) {
+            initializeDatabase(this)
+            initializeViewModels(this)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,19 +41,16 @@ class NoteListFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_note_list, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        with(context as FragmentActivity) {
-            initializeDatabase(this)
-            initializeViewModels(this)
-        }
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         initializeNoteList()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.loadNotes()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -59,19 +65,13 @@ class NoteListFragment() : Fragment() {
         return super.onContextItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        sharedViewModel.loadNotes()
-    }
-
     private fun initializeNoteList() {
         Timber.d("Initialising RecyclerView...")
         rvNotes.layoutManager = LinearLayoutManager(context)
         rvNotes.addItemDecoration(DividerItemDecoration(context, ClipDrawable.HORIZONTAL))
         rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext())
 
-        sharedViewModel.notes.observe(this, Observer {
+        viewModel.notes.observe(this, Observer {
             it?.let { notes ->
                 (rvNotes.adapter as NoteAdapter).addNotes(notes)
             }
