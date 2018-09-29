@@ -24,6 +24,8 @@ import io.benreynolds.notebook.viewModels.NotebookViewModel
 import kotlinx.android.synthetic.main.fragment_note_list.*
 import timber.log.Timber
 
+const val BUNDLE_NOTE_UID = "io.benreynolds.notebook.extras.noteUid"
+
 class NoteListFragment : Fragment() {
     private lateinit var notesDatabase: NoteDatabase
     private lateinit var sharedViewModel: NotebookViewModel
@@ -77,6 +79,27 @@ class NoteListFragment : Fragment() {
         return super.onContextItemSelected(item)
     }
 
+    private fun onNoteClicked(note: Note) {
+        val noteDetailFragment = NoteDetailFragment().apply {
+            arguments = Bundle().apply {
+                note.uid?.let { putLong(BUNDLE_NOTE_UID, it) }
+            }
+        }
+
+        activity
+            ?.supportFragmentManager
+            ?.beginTransaction()
+            ?.setCustomAnimations(
+                R.anim.enter_from_right,
+                R.anim.exit_to_left,
+                R.anim.enter_from_left,
+                R.anim.exit_to_right
+            )
+            ?.replace(R.id.clRoot, noteDetailFragment)
+            ?.addToBackStack(null)
+            ?.commit()
+    }
+
     private fun onNotesChanged(notes: List<Note>) {
         Timber.d("Observed of notes change, updating RecyclerView adapter...")
         with(rvNotes.adapter as NoteAdapter) {
@@ -106,7 +129,9 @@ class NoteListFragment : Fragment() {
     private fun initializeNoteList() {
         Timber.d("Initialising RecyclerView...")
         rvNotes.layoutManager = LinearLayoutManager(context)
-        rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext())
+        rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext()) {
+            onNoteClicked(it)
+        }
 
         rvNotes.clearOnScrollListeners()
         rvNotes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
