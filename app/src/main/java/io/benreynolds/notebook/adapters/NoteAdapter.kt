@@ -69,7 +69,7 @@ class NoteAdapter(
     override fun getItemCount() = items.size
 
     private fun updateSortOrder() {
-        Timber.d("Sorting notes... (sortMode: %s)", sortMode.name)
+        Timber.d("Sorting notes... (defaultSortMode: %s)", sortMode.name)
         when (sortMode) {
             SortMode.ALPHABETICAL -> items.sortBy { it.title.capitalize() }
             SortMode.DATE_CREATED -> items.sortBy { it.dateCreated }
@@ -80,10 +80,18 @@ class NoteAdapter(
         notifyDataSetChanged()
     }
 
-    enum class SortMode {
-        ALPHABETICAL,
-        DATE_CREATED,
-        LAST_MODIFIED
+    enum class SortMode(val uid: Int) {
+        ALPHABETICAL(0),
+        DATE_CREATED(1),
+        LAST_MODIFIED(2);
+
+        companion object {
+            val DEFAULT = LAST_MODIFIED
+
+            fun withUid(uid: Int): SortMode? {
+                return values().find { it.uid == uid }
+            }
+        }
     }
 }
 

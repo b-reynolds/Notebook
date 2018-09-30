@@ -75,12 +75,17 @@ class NoteListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        with(rvNotes.adapter as NoteAdapter) {
-            when {
-                item.itemId == R.id.mbAlphabetical -> sortMode = NoteAdapter.SortMode.ALPHABETICAL
-                item.itemId == R.id.mbDateCreated -> sortMode = NoteAdapter.SortMode.DATE_CREATED
-                item.itemId == R.id.mbLastModified -> sortMode = NoteAdapter.SortMode.LAST_MODIFIED
+        when (item.itemId) {
+            R.id.mbAlphabetical -> NoteAdapter.SortMode.ALPHABETICAL
+            R.id.mbDateCreated -> NoteAdapter.SortMode.DATE_CREATED
+            R.id.mbLastModified -> NoteAdapter.SortMode.LAST_MODIFIED
+            else -> null
+        }?.let {
+            with(rvNotes.adapter as NoteAdapter) {
+                sortMode = it
             }
+
+            viewModel.setSortMode(it)
         }
 
         return super.onContextItemSelected(item)
@@ -134,16 +139,18 @@ class NoteListFragment : Fragment() {
             .get(NotebookViewModel::class.java)
 
         Timber.d("Initialising view model...")
-        viewModel = ViewModelProviders.of(this, NoteListViewModelFactory(notesDatabase))
-            .get(NoteListViewModel::class.java)
+        viewModel = ViewModelProviders.of(
+            this,
+            NoteListViewModelFactory(notesDatabase, activity.getPreferences(Context.MODE_PRIVATE))
+        ).get(NoteListViewModel::class.java)
     }
 
     private fun initializeNoteList() {
         Timber.d("Initialising RecyclerView...")
         rvNotes.layoutManager = LinearLayoutManager(context)
-        rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext()) {
-            onNoteClicked(it)
-        }
+
+        rvNotes.adapter = NoteAdapter(mutableListOf(), requireContext()) { onNoteClicked(it) }
+            .apply { sortMode = viewModel.getSortMode() }
 
         rvNotes.clearOnScrollListeners()
         rvNotes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
