@@ -3,6 +3,8 @@ package io.benreynolds.notebook.fragments
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -58,6 +60,7 @@ class NoteListFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         initializeNoteList()
+        initializeAddButton()
     }
 
     override fun onResume() {
@@ -65,6 +68,10 @@ class NoteListFragment : Fragment() {
 
         Timber.d("Requesting latest notes...")
         viewModel.loadNotes()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_list, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -79,12 +86,13 @@ class NoteListFragment : Fragment() {
         return super.onContextItemSelected(item)
     }
 
-    private fun onNoteClicked(note: Note) {
-        val noteDetailFragment = NoteDetailFragment().apply {
-            arguments = Bundle().apply {
-                note.uid?.let { putLong(BUNDLE_NOTE_UID, it) }
-            }
+    private fun openNoteDetailView(note: Note? = null) {
+        val noteDetailFragment = NoteDetailFragment()
+        noteDetailFragment.arguments = Bundle().apply {
+            note?.uid?.let { putLong(BUNDLE_NOTE_UID, it) }
         }
+
+        fbAdd.hide()
 
         activity
             ?.supportFragmentManager
@@ -98,6 +106,10 @@ class NoteListFragment : Fragment() {
             ?.replace(R.id.clRoot, noteDetailFragment)
             ?.addToBackStack(null)
             ?.commit()
+    }
+
+    private fun onNoteClicked(note: Note) {
+        openNoteDetailView(note)
     }
 
     private fun onNotesChanged(notes: List<Note>) {
@@ -151,5 +163,11 @@ class NoteListFragment : Fragment() {
 
         Timber.d("Adding notes observer...")
         viewModel.notes.observe(this, Observer { onNotesChanged(it) })
+    }
+
+    private fun initializeAddButton() {
+        fbAdd.setOnClickListener {
+            openNoteDetailView()
+        }
     }
 }

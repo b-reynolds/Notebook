@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
 import io.benreynolds.notebook.databases.NoteDatabase
 import io.benreynolds.notebook.R
+import io.benreynolds.notebook.fragments.NoteDetailFragment
 import io.benreynolds.notebook.fragments.NoteListFragment
 import io.benreynolds.notebook.viewModels.NotebookViewModel
 import io.benreynolds.notebook.viewModels.NotebookViewModelFactory
@@ -24,12 +25,6 @@ class NotebookActivity : AppCompatActivity() {
         initializeViewModel()
 
         addNoteListFragment()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_notes, menu)
-
-        return true
     }
 
     private fun addNoteListFragment() {

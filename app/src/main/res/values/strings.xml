@@ -6,4 +6,6 @@
     <string name="text_alphabetical_button">Alphabetical</string>
     <string name="text_last_modified_button">Last Modified</string>
     <string name="text_date_created_button">Date Created</string>
+    <string name="text_title_hint">Title</string>
+    <string name="text_body_hint">Body</string>
 </resources>
