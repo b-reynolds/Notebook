@@ -1,4 +1,4 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import io.benreynolds.notebook.R
+import io.benreynolds.notebook.databases.entities.Note
 import kotlinx.android.synthetic.main.item_note.view.*
 import timber.log.Timber
+import java.text.SimpleDateFormat
 
 class NoteAdapter(
     val items: MutableList<Note>,
@@ -55,6 +58,8 @@ class NoteAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvTitle.text = items[position].title
         holder.tvBody.text = items[position].body
+        holder.tvDateCreated.text = SimpleDateFormat("dd/MM/yyyy").format(items[position].dateCreated)
+
         holder.clRoot.setOnClickListener {
             onNoteClicked?.invoke(items[position])
         }
@@ -86,4 +91,5 @@ class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val clRoot: ConstraintLayout = view.clRoot
     val tvTitle: TextView = view.tvTitle
     val tvBody: TextView = view.tvBody
+    val tvDateCreated: TextView = view.tvDateCreated
 }

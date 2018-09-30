@@ -1,5 +1,7 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.databases.entities
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,7 +16,7 @@ import java.util.Date
 @Entity
 class Note(
     @PrimaryKey(autoGenerate = true) var uid: Long? = null,
-    title: String,
+    title: String = "",
     body: String = ""
 ) {
     @ColumnInfo(name = "title")
@@ -39,7 +41,7 @@ class Note(
     var dateCreated = Date()
 
     @ColumnInfo(name = "last_modified")
-    var lastModified = dateCreated
+    var lastModified = Date(dateCreated.time)
 
     override fun equals(other: Any?): Boolean {
         if (other is Note) {

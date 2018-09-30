@@ -1,4 +1,4 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.databases.typeConverters
 
 import androidx.room.TypeConverter
 import java.util.Date

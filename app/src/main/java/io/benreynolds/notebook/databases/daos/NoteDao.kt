@@ -1,6 +1,11 @@
-package io.benreynolds.notebook
+package io.benreynolds.notebook.databases.daos
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import io.benreynolds.notebook.databases.entities.Note
 
 /**
  * Interface containing methods for interacting with a database containing [Note]s.
