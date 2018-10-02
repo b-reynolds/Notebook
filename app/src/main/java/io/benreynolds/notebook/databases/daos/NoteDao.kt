@@ -28,6 +28,12 @@ interface NoteDao {
     fun insertAll(vararg notes: Note)
 
     /**
+     * Inserts the [Note] into the database.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertNote(note: Note): Long
+
+    /**
      * Deletes an existing [Note] from the database.
      */
     @Delete
