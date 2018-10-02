@@ -19,7 +19,7 @@ import io.benreynolds.notebook.viewModels.NotebookViewModel
 import kotlinx.android.synthetic.main.fragment_note_detail.*
 import timber.log.Timber
 
-class NoteDetailFragment() : Fragment() {
+class NoteDetailFragment : Fragment() {
     private lateinit var notesDatabase: NoteDatabase
 
     private lateinit var sharedViewModel: NotebookViewModel
