@@ -24,7 +24,9 @@ class NotebookActivity : AppCompatActivity() {
         initializeDatabase()
         initializeViewModel()
 
-        addNoteListFragment()
+        if (savedInstanceState == null) {
+            addNoteListFragment()
+        }
     }
 
     private fun addNoteListFragment() {
