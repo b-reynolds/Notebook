@@ -4,18 +4,15 @@ import android.content.Context
 import android.os.Bundle
 import android.text.method.KeyListener
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
 import io.benreynolds.notebook.databases.NoteDatabase
 import io.benreynolds.notebook.R
+import io.benreynolds.notebook.extensions.nonNullObserve
 import io.benreynolds.notebook.viewModels.NoteDetailViewModel
 import io.benreynolds.notebook.viewModels.NoteDetailViewModelFactory
 import io.benreynolds.notebook.viewModels.NotebookViewModel
@@ -43,23 +40,8 @@ class NoteDetailFragment() : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setHasOptionsMenu(true)
-
-        val selectedNote = arguments?.get(BUNDLE_NOTE_UID) as Long?
-
-        viewModel.setNote(selectedNote) {
-            viewModel.note.value?.let {
-                etTitle.setText(it.title)
-                etBody.setText(it.body)
-            }
-        }
-
-        viewModel.editMode.value = (selectedNote == null)
-        viewModel.editMode.observe(this, Observer {
-            it?.let {
-                editMode -> toggleEditMode(editMode)
-            }
-        })
+        setNote(arguments)
+        initializeEditTexts()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -68,21 +50,7 @@ class NoteDetailFragment() : Fragment() {
         titleKeyListener = etTitle.keyListener
         bodyKeyListener = etBody.keyListener
 
-        viewModel.editMode.value?.let { isInEditMode ->
-            updateActionButtonState(isInEditMode)
-        }
-
-        fbAction.setOnClickListener {
-            viewModel.editMode.value?.let {
-                val newState = !it
-                viewModel.editMode.value = newState
-                updateActionButtonState(newState)
-            }
-        }
-    }
-
-    private fun updateActionButtonState(editMode: Boolean) {
-        fbAction.setImageResource(if (editMode) R.drawable.ic_save_white_24dp else R.drawable.ic_mode_edit_white_24dp)
+        initializeActionButton()
     }
 
     override fun onCreateView(
@@ -93,23 +61,54 @@ class NoteDetailFragment() : Fragment() {
         return inflater.inflate(R.layout.fragment_note_detail, container, false)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_detail, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when {
-            item.itemId == R.id.mbDone -> {
-                viewModel.saveNote(etTitle.text.toString(), etBody.text.toString())
-            }
+    private fun setNote(transactionArguments: Bundle?) {
+        if (transactionArguments == null || !transactionArguments.containsKey(BUNDLE_NOTE_UID)) {
+            viewModel.createNewNote()
+            return
         }
 
-        return super.onContextItemSelected(item)
+        viewModel.setNote(transactionArguments.getLong(BUNDLE_NOTE_UID)) {
+            viewModel.note.value?.let { note ->
+                etTitle.setText(note.title)
+                etBody.setText(note.body)
+            }
+        }
     }
 
-    private fun toggleEditMode(editMode: Boolean) {
-        etTitle.keyListener = if (editMode) titleKeyListener else null
-        etBody.keyListener = if (editMode) bodyKeyListener else null
+    private fun updateActionButtonState() {
+        val activeMode = viewModel.mode.value?.let { it } ?: return
+        fbAction.setImageResource(
+            when (activeMode) {
+                NoteDetailViewModel.Mode.EDIT -> R.drawable.ic_save_white_24dp
+                NoteDetailViewModel.Mode.VIEW -> R.drawable.ic_mode_edit_white_24dp
+            }
+        )
+    }
+
+    private fun initializeEditTexts() {
+        viewModel.mode.nonNullObserve(this) {
+            etTitle.keyListener =
+                if (it == NoteDetailViewModel.Mode.EDIT) titleKeyListener else null
+            etBody.keyListener =
+                if (it == NoteDetailViewModel.Mode.EDIT) bodyKeyListener else null
+        }
+    }
+
+    private fun initializeActionButton() {
+        updateActionButtonState()
+        viewModel.mode.nonNullObserve(this) {
+            updateActionButtonState()
+        }
+
+        fbAction.setOnClickListener {
+            viewModel.mode.value?.let { mode ->
+                if (mode == NoteDetailViewModel.Mode.EDIT) {
+                    viewModel.saveNote(etTitle.text.toString(), etBody.text.toString())
+                }
+
+                viewModel.toggleMode()
+            }
+        }
     }
 
     private fun initializeDatabase(activity: FragmentActivity) {
@@ -130,5 +129,4 @@ class NoteDetailFragment() : Fragment() {
         viewModel = ViewModelProviders.of(this, NoteDetailViewModelFactory(notesDatabase))
             .get(NoteDetailViewModel::class.java)
     }
-
 }
