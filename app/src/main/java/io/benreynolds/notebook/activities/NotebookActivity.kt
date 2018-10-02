@@ -1,13 +1,11 @@
 package io.benreynolds.notebook.activities
 
 import android.os.Bundle
-import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.room.Room
 import io.benreynolds.notebook.databases.NoteDatabase
 import io.benreynolds.notebook.R
-import io.benreynolds.notebook.fragments.NoteDetailFragment
 import io.benreynolds.notebook.fragments.NoteListFragment
 import io.benreynolds.notebook.viewModels.NotebookViewModel
 import io.benreynolds.notebook.viewModels.NotebookViewModelFactory
