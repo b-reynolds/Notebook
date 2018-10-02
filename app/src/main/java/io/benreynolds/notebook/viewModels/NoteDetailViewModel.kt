@@ -14,6 +14,8 @@ class NoteDetailViewModel(noteDatabase: NoteDatabase) : ViewModel() {
     private val noteDao: NoteDao = noteDatabase.noteDao()
     var note: MutableLiveData<Note> = MutableLiveData()
 
+    var editMode: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+
     fun setNote(noteUid: Long? = null, onActiveNoteSet: (() -> Unit)? = null) {
         launch(UI) {
             note.value = withContext(DefaultDispatcher) {
