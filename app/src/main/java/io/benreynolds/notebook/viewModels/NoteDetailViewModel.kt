@@ -33,7 +33,7 @@ class NoteDetailViewModel(noteDatabase: NoteDatabase) : ViewModel() {
                     it.title = title
                     it.body = body
 
-                    noteDao.insertAll(it)
+                    setNote(noteDao.insertNote(it))
                 }
             }
 
