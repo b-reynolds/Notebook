@@ -1,7 +1,10 @@
 package io.benreynolds.notebook.fragments
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.method.KeyListener
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +44,6 @@ class NoteDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         setNote(arguments)
-        initializeEditTexts()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -50,6 +52,7 @@ class NoteDetailFragment : Fragment() {
         titleKeyListener = etTitle.keyListener
         bodyKeyListener = etBody.keyListener
 
+        initializeEditTexts()
         initializeActionButton()
     }
 
@@ -76,13 +79,19 @@ class NoteDetailFragment : Fragment() {
     }
 
     private fun updateActionButtonState() {
-        val activeMode = viewModel.mode.value?.let { it } ?: return
-        fbAction.setImageResource(
-            when (activeMode) {
-                NoteDetailViewModel.Mode.EDIT -> R.drawable.ic_save_white_24dp
-                NoteDetailViewModel.Mode.VIEW -> R.drawable.ic_mode_edit_white_24dp
-            }
-        )
+        viewModel.isNoteValid(etTitle.text.toString()).let {
+            fbAction.isEnabled = it
+            fbAction.alpha = if (it) 1.0f else 0.75f
+        }
+
+        viewModel.mode.value?.let {
+            fbAction.setImageResource(
+                when (it) {
+                    NoteDetailViewModel.Mode.EDIT -> R.drawable.ic_save_white_24dp
+                    NoteDetailViewModel.Mode.VIEW -> R.drawable.ic_mode_edit_white_24dp
+                }
+            )
+        }
     }
 
     private fun initializeEditTexts() {
@@ -92,6 +101,14 @@ class NoteDetailFragment : Fragment() {
             etBody.keyListener =
                 if (it == NoteDetailViewModel.Mode.EDIT) bodyKeyListener else null
         }
+
+        etTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                updateActionButtonState()
+            }
+        })
     }
 
     private fun initializeActionButton() {

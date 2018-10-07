@@ -56,6 +56,8 @@ class NoteDetailViewModel(noteDatabase: NoteDatabase) : ViewModel() {
         }
     }
 
+    fun isNoteValid(title: String) = title.isNotBlank()
+
     fun saveNote(title: String, body: String, onNoteSaved: (() -> Unit)? = null) {
         launch(UI) {
             withContext(DefaultDispatcher) {
